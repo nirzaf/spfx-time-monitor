@@ -1,54 +1,6 @@
 @import '~@fluentui/react/dist/sass/References.scss';
 
-.vacationRc {
-  color: "[theme:bodyText, default: #323130]";
-  color: var(--bodyText);
-  padding: 20px;
-  background-color: "[theme:bodyBackground, default: #ffffff]";
-  background-color: var(--bodyBackground);
-  min-height: 600px;
-
-  &.teams {
-    font-family: $ms-font-family-fallbacks;
-  }
-}
-
-.welcome {
-  text-align: center;
-  margin-bottom: 30px;
-  padding: 20px;
-  background-color: "[theme:neutralLighterAlt, default: #faf9f8]";
-  background-color: var(--neutralLighterAlt);
-  border-radius: 8px;
-}
-
-.welcomeImage {
-  max-width: 200px;
-  height: auto;
-  margin-bottom: 16px;
-}
-
-.links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  
-  li {
-    margin-bottom: 8px;
-    
-    a {
-      color: "[theme:themePrimary, default: #0078d4]";
-      color: var(--themePrimary);
-      text-decoration: none;
-      
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-}
-
-.leaveHistory {
+.leaveAdministration {
   color: "[theme:bodyText, default: #323130]";
   color: var(--bodyText);
   padding: 20px;
@@ -84,8 +36,8 @@
 }
 
 .statCard {
-  min-width: 150px;
-  padding: 20px;
+  min-width: 200px;
+  padding: 24px;
   text-align: center;
   border-radius: 8px;
   box-shadow: "[theme:elevation4, default: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108)]";
@@ -93,6 +45,8 @@
   background-color: "[theme:bodyBackground, default: #ffffff]";
   background-color: var(--bodyBackground);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid "[theme:neutralQuaternaryAlt, default: #e1dfdd]";
+  border: 1px solid var(--neutralQuaternaryAlt);
 
   &:hover {
     transform: translateY(-2px);
@@ -106,29 +60,26 @@
   color: "[theme:themePrimary, default: #0078d4]";
   color: var(--themePrimary);
   margin-bottom: 8px;
+  font-size: 2.5em;
 }
 
 .chartCard {
   flex: 1;
-  min-width: 300px;
-  padding: 20px;
+  min-width: 350px;
+  padding: 24px;
   border-radius: 8px;
   box-shadow: "[theme:elevation4, default: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108)]";
   box-shadow: var(--elevation4);
   background-color: "[theme:bodyBackground, default: #ffffff]";
   background-color: var(--bodyBackground);
-}
-
-.chartContainer {
-  height: 300px;
-  margin-top: 16px;
-  position: relative;
+  border: 1px solid "[theme:neutralQuaternaryAlt, default: #e1dfdd]";
+  border: 1px solid var(--neutralQuaternaryAlt);
 }
 
 .filterContainer {
   background-color: "[theme:neutralLighterAlt, default: #faf9f8]";
   background-color: var(--neutralLighterAlt);
-  padding: 16px;
+  padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
   border: 1px solid "[theme:neutralQuaternaryAlt, default: #e1dfdd]";
@@ -138,7 +89,7 @@
 .filterRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 16px;
   align-items: flex-end;
 
   > * {
@@ -152,8 +103,10 @@
   border-radius: 8px;
   box-shadow: "[theme:elevation4, default: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108)]";
   box-shadow: var(--elevation4);
-  padding: 20px;
+  padding: 24px;
   margin: 16px 0;
+  border: 1px solid "[theme:neutralQuaternaryAlt, default: #e1dfdd]";
+  border: 1px solid var(--neutralQuaternaryAlt);
 
   :global {
     .ms-DetailsList {
@@ -168,6 +121,7 @@
         font-weight: 600;
         color: "[theme:neutralPrimary, default: #323130]";
         color: var(--neutralPrimary);
+        padding: 16px 12px;
         
         &:hover {
           background-color: "[theme:neutralLighter, default: #f3f2f1]";
@@ -185,10 +139,15 @@
           background-color: "[theme:neutralLighter, default: #f3f2f1]";
           background-color: var(--neutralLighter);
         }
+
+        &.is-selected {
+          background-color: "[theme:themeLighterAlt, default: #eff6fc]";
+          background-color: var(--themeLighterAlt);
+        }
       }
 
       .ms-DetailsRow-cell {
-        padding: 12px 8px;
+        padding: 16px 12px;
         border-bottom: 1px solid "[theme:neutralQuaternaryAlt, default: #e1dfdd]";
         border-bottom: 1px solid var(--neutralQuaternaryAlt);
       }
@@ -200,26 +159,28 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 16px;
-  margin-top: 20px;
-  padding: 16px;
+  gap: 20px;
+  margin-top: 24px;
+  padding: 20px;
   background-color: "[theme:neutralLighterAlt, default: #faf9f8]";
   background-color: var(--neutralLighterAlt);
   border-radius: 8px;
+  border: 1px solid "[theme:neutralQuaternaryAlt, default: #e1dfdd]";
+  border: 1px solid var(--neutralQuaternaryAlt);
 }
 
 .analyticsContainer {
   .statsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
   }
 
   .chartsGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 20px;
+    gap: 24px;
   }
 }
 
@@ -227,54 +188,77 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 300px;
+  height: 400px;
   background-color: "[theme:bodyBackground, default: #ffffff]";
   background-color: var(--bodyBackground);
   border-radius: 8px;
 }
 
 .errorContainer {
-  padding: 20px;
+  padding: 24px;
   text-align: center;
   background-color: "[theme:errorBackground, default: #fde7e9]";
   background-color: var(--errorBackground);
   border-radius: 8px;
   margin: 16px 0;
+  border: 1px solid "[theme:errorText, default: #a80000]";
+  border: 1px solid var(--errorText);
 }
 
 .commandBarContainer {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   
   :global {
     .ms-CommandBar {
       background-color: transparent;
-      border-bottom: 1px solid "[theme:neutralQuaternaryAlt, default: #e1dfdd]";
-      border-bottom: 1px solid var(--neutralQuaternaryAlt);
-      padding-bottom: 8px;
+      border-bottom: 2px solid "[theme:neutralQuaternaryAlt, default: #e1dfdd]";
+      border-bottom: 2px solid var(--neutralQuaternaryAlt);
+      padding-bottom: 12px;
+    }
+
+    .ms-CommandBar-primaryCommand {
+      .ms-Button {
+        margin-right: 8px;
+        
+        &:hover {
+          background-color: "[theme:neutralLighter, default: #f3f2f1]";
+          background-color: var(--neutralLighter);
+        }
+      }
     }
   }
 }
 
 .detailsPanel {
   .detailRow {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid "[theme:neutralQuaternaryAlt, default: #e1dfdd]";
+    border-bottom: 1px solid var(--neutralQuaternaryAlt);
+
+    &:last-child {
+      border-bottom: none;
+    }
   }
 
   .statusBadge {
     display: inline-flex;
     align-items: center;
-    padding: 6px 12px;
-    border-radius: 16px;
+    padding: 8px 16px;
+    border-radius: 20px;
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
     gap: 6px;
+    letter-spacing: 0.5px;
 
     &.approved {
       background-color: "[theme:successBackground, default: #dff6dd]";
       background-color: var(--successBackground);
       color: "[theme:successText, default: #107c10]";
       color: var(--successText);
+      border: 1px solid "[theme:successText, default: #107c10]";
+      border: 1px solid var(--successText);
     }
 
     &.pending {
@@ -282,6 +266,8 @@
       background-color: var(--warningBackground);
       color: "[theme:warningText, default: #797673]";
       color: var(--warningText);
+      border: 1px solid "[theme:warningText, default: #797673]";
+      border: 1px solid var(--warningText);
     }
 
     &.rejected {
@@ -289,19 +275,24 @@
       background-color: var(--errorBackground);
       color: "[theme:errorText, default: #a80000]";
       color: var(--errorText);
+      border: 1px solid "[theme:errorText, default: #a80000]";
+      border: 1px solid var(--errorText);
     }
   }
 }
 
 .pivotContainer {
+  margin-bottom: 24px;
+  
   :global {
     .ms-Pivot {
-      margin-bottom: 20px;
+      margin-bottom: 0;
     }
 
     .ms-Pivot-link {
       font-weight: 500;
-      padding: 12px 16px;
+      padding: 16px 20px;
+      font-size: 14px;
       
       &:hover {
         background-color: "[theme:neutralLighter, default: #f3f2f1]";
@@ -311,8 +302,9 @@
       &.is-selected {
         color: "[theme:themePrimary, default: #0078d4]";
         color: var(--themePrimary);
-        border-bottom: 2px solid "[theme:themePrimary, default: #0078d4]";
-        border-bottom: 2px solid var(--themePrimary);
+        border-bottom: 3px solid "[theme:themePrimary, default: #0078d4]";
+        border-bottom: 3px solid var(--themePrimary);
+        font-weight: 600;
       }
     }
   }
@@ -320,43 +312,88 @@
 
 .emptyState {
   text-align: center;
-  padding: 40px 20px;
+  padding: 60px 20px;
   background-color: "[theme:neutralLighterAlt, default: #faf9f8]";
   background-color: var(--neutralLighterAlt);
-  border-radius: 8px;
+  border-radius: 12px;
   border: 2px dashed "[theme:neutralQuaternaryAlt, default: #e1dfdd]";
   border: 2px dashed var(--neutralQuaternaryAlt);
 
   .emptyIcon {
-    font-size: 48px;
+    font-size: 64px;
     color: "[theme:neutralTertiary, default: #a19f9d]";
     color: var(--neutralTertiary);
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
 
   .emptyTitle {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     color: "[theme:neutralPrimary, default: #323130]";
     color: var(--neutralPrimary);
-    margin-bottom: 8px;
+    margin-bottom: 12px;
   }
 
   .emptyDescription {
     color: "[theme:neutralSecondary, default: #605e5c]";
     color: var(--neutralSecondary);
+    font-size: 14px;
+  }
+}
+
+// Action icons styling
+.actionIcon {
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: "[theme:neutralLighter, default: #f3f2f1]";
+    background-color: var(--neutralLighter);
+  }
+
+  &.approve {
+    color: "[theme:successText, default: #107c10]";
+    color: var(--successText);
+
+    &:hover {
+      background-color: "[theme:successBackground, default: #dff6dd]";
+      background-color: var(--successBackground);
+    }
+  }
+
+  &.reject {
+    color: "[theme:errorText, default: #a80000]";
+    color: var(--errorText);
+
+    &:hover {
+      background-color: "[theme:errorBackground, default: #fde7e9]";
+      background-color: var(--errorBackground);
+    }
+  }
+
+  &.view {
+    color: "[theme:themePrimary, default: #0078d4]";
+    color: var(--themePrimary);
+
+    &:hover {
+      background-color: "[theme:themeLighterAlt, default: #eff6fc]";
+      background-color: var(--themeLighterAlt);
+    }
   }
 }
 
 // Responsive design
 @media (max-width: 768px) {
-  .leaveHistory {
-    padding: 10px;
+  .leaveAdministration {
+    padding: 12px;
   }
 
   .filterRow {
     flex-direction: column;
     align-items: stretch;
+    gap: 12px;
 
     > * {
       width: 100%;
@@ -365,8 +402,8 @@
 
   .analyticsContainer {
     .statsGrid {
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
     }
 
     .chartsGrid {
@@ -379,41 +416,49 @@
     min-width: unset;
   }
 
-  .chartContainer {
-    height: 250px;
-  }
-
   .statCard {
     min-width: unset;
     padding: 16px;
   }
 
+  .statNumber {
+    font-size: 2em;
+  }
+
   .paginationContainer {
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
   }
 
   :global {
     .ms-DetailsList {
       .ms-DetailsRow-cell {
-        padding: 8px 4px;
+        padding: 12px 8px;
         font-size: 12px;
+      }
+
+      .ms-DetailsHeader-cell {
+        padding: 12px 8px;
+        font-size: 12px;
+      }
+    }
+
+    .ms-Panel {
+      .ms-Panel-main {
+        width: 100% !important;
+        max-width: 100% !important;
       }
     }
   }
 }
 
 @media (max-width: 480px) {
-  .leaveHistory {
-    padding: 5px;
+  .leaveAdministration {
+    padding: 8px;
   }
 
   .title {
     font-size: 1.5em;
-  }
-
-  .chartContainer {
-    height: 200px;
   }
 
   .statCard {
@@ -421,7 +466,12 @@
   }
 
   .statNumber {
-    font-size: 1.5em;
+    font-size: 1.8em;
+  }
+
+  .filterContainer,
+  .listContainer {
+    padding: 16px;
   }
 
   :global {
@@ -429,8 +479,19 @@
       .ms-CommandBar-primaryCommand {
         .ms-Button {
           min-width: unset;
-          padding: 8px;
+          padding: 8px 12px;
+          
+          .ms-Button-label {
+            font-size: 12px;
+          }
         }
+      }
+    }
+
+    .ms-Pivot {
+      .ms-Pivot-link {
+        padding: 12px 16px;
+        font-size: 12px;
       }
     }
   }
@@ -438,13 +499,14 @@
 
 // High contrast mode support
 @media (prefers-contrast: high) {
-  .leaveHistory {
+  .leaveAdministration {
     border: 2px solid;
   }
 
   .statCard,
   .chartCard,
-  .listContainer {
+  .listContainer,
+  .filterContainer {
     border: 2px solid;
   }
 
@@ -453,11 +515,19 @@
       font-weight: 700;
     }
   }
+
+  .statusBadge {
+    border-width: 2px !important;
+  }
+
+  .actionIcon {
+    border: 1px solid;
+  }
 }
 
 // Print styles
 @media print {
-  .leaveHistory {
+  .leaveAdministration {
     background: white !important;
     color: black !important;
     padding: 0;
@@ -465,7 +535,8 @@
 
   .commandBarContainer,
   .filterContainer,
-  .paginationContainer {
+  .paginationContainer,
+  .pivotContainer {
     display: none;
   }
 
@@ -475,14 +546,12 @@
     box-shadow: none;
     border: 1px solid black;
     break-inside: avoid;
-  }
-
-  .chartContainer {
-    height: 200px;
+    margin-bottom: 20px;
   }
 
   .title {
     color: black !important;
+    margin-bottom: 20px;
   }
 
   :global {
@@ -496,6 +565,14 @@
           background: #f8f8f8 !important;
         }
       }
+    }
+  }
+
+  .detailsPanel {
+    .statusBadge {
+      border: 1px solid black !important;
+      background: white !important;
+      color: black !important;
     }
   }
 }
@@ -563,7 +640,7 @@
 }
 
 // Accessibility improvements
-.leaveHistory {
+.leaveAdministration {
   :global {
     .ms-Button {
       &:focus {
@@ -592,5 +669,56 @@
         }
       }
     }
+
+    .ms-SearchBox {
+      &:focus-within {
+        .ms-SearchBox-field {
+          border-color: "[theme:themePrimary, default: #0078d4]";
+          border-color: var(--themePrimary);
+          border-width: 2px;
+        }
+      }
+    }
   }
+}
+
+// Loading states
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  border-radius: 8px;
+}
+
+// Success states
+.successMessage {
+  background-color: "[theme:successBackground, default: #dff6dd]";
+  background-color: var(--successBackground);
+  color: "[theme:successText, default: #107c10]";
+  color: var(--successText);
+  padding: 12px 16px;
+  border-radius: 4px;
+  border-left: 4px solid "[theme:successText, default: #107c10]";
+  border-left: 4px solid var(--successText);
+  margin-bottom: 16px;
+}
+
+// Error states
+.errorMessage {
+  background-color: "[theme:errorBackground, default: #fde7e9]";
+  background-color: var(--errorBackground);
+  color: "[theme:errorText, default: #a80000]";
+  color: var(--errorText);
+  padding: 12px 16px;
+  border-radius: 4px;
+  border-left: 4px solid "[theme:errorText, default: #a80000]";
+  border-left: 4px solid var(--errorText);
+  margin-bottom: 16px;
 }

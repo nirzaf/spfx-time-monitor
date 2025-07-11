@@ -1,0 +1,345 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.teamCalendar {
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  padding: 20px;
+  background-color: "[theme:bodyBackground, default: #ffffff]";
+  background-color: var(--bodyBackground);
+  min-height: 600px;
+
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+
+  &.dark {
+    background-color: "[theme:bodyBackgroundHovered, default: #f3f2f1]";
+    background-color: var(--bodyBackgroundHovered);
+    
+    .calendarContainer {
+      background-color: "[theme:bodyBackground, default: #ffffff]";
+      background-color: var(--bodyBackground);
+    }
+  }
+}
+
+.title {
+  font-weight: 600;
+  color: "[theme:themePrimary, default: #0078d4]";
+  color: var(--themePrimary);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.calendarContainer {
+  background-color: "[theme:bodyBackground, default: #ffffff]";
+  background-color: var(--bodyBackground);
+  border-radius: 4px;
+  box-shadow: "[theme:elevation4, default: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108)]";
+  box-shadow: var(--elevation4);
+  padding: 20px;
+  margin: 16px 0;
+
+  // FullCalendar custom styling
+  :global {
+    .fc {
+      font-family: $ms-font-family-fallbacks;
+    }
+
+    .fc-toolbar {
+      margin-bottom: 16px;
+    }
+
+    .fc-toolbar-title {
+      font-size: 1.5em;
+      font-weight: 600;
+      color: "[theme:neutralPrimary, default: #323130]";
+      color: var(--neutralPrimary);
+    }
+
+    .fc-button {
+      background-color: "[theme:themePrimary, default: #0078d4]";
+      background-color: var(--themePrimary);
+      border-color: "[theme:themePrimary, default: #0078d4]";
+      border-color: var(--themePrimary);
+      color: "[theme:white, default: #ffffff]";
+      color: var(--white);
+      border-radius: 2px;
+      font-family: $ms-font-family-fallbacks;
+      font-size: 14px;
+      padding: 6px 12px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: "[theme:themeDarkAlt, default: #106ebe]";
+        background-color: var(--themeDarkAlt);
+        border-color: "[theme:themeDarkAlt, default: #106ebe]";
+        border-color: var(--themeDarkAlt);
+      }
+
+      &:focus {
+        box-shadow: 0 0 0 2px "[theme:themePrimary, default: #0078d4]";
+        box-shadow: 0 0 0 2px var(--themePrimary);
+      }
+
+      &.fc-button-active {
+        background-color: "[theme:themeDark, default: #005a9e]";
+        background-color: var(--themeDark);
+        border-color: "[theme:themeDark, default: #005a9e]";
+        border-color: var(--themeDark);
+      }
+    }
+
+    .fc-daygrid-day {
+      &:hover {
+        background-color: "[theme:neutralLighter, default: #f3f2f1]";
+        background-color: var(--neutralLighter);
+      }
+    }
+
+    .fc-day-today {
+      background-color: "[theme:themeLighter, default: #deecf9]";
+      background-color: var(--themeLighter);
+    }
+
+    .fc-event {
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px 4px;
+      margin: 1px 0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        opacity: 0.8;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    .fc-event-title {
+      font-weight: 500;
+    }
+
+    .fc-col-header-cell {
+      background-color: "[theme:neutralLighterAlt, default: #faf9f8]";
+      background-color: var(--neutralLighterAlt);
+      font-weight: 600;
+      color: "[theme:neutralPrimary, default: #323130]";
+      color: var(--neutralPrimary);
+      border-color: "[theme:neutralQuaternaryAlt, default: #e1dfdd]";
+      border-color: var(--neutralQuaternaryAlt);
+    }
+
+    .fc-daygrid-day-number {
+      color: "[theme:neutralPrimary, default: #323130]";
+      color: var(--neutralPrimary);
+      font-weight: 500;
+      padding: 4px;
+    }
+
+    .fc-scrollgrid {
+      border-color: "[theme:neutralQuaternaryAlt, default: #e1dfdd]";
+      border-color: var(--neutralQuaternaryAlt);
+    }
+
+    .fc-scrollgrid-section > * {
+      border-color: "[theme:neutralQuaternaryAlt, default: #e1dfdd]";
+      border-color: var(--neutralQuaternaryAlt);
+    }
+  }
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  background-color: "[theme:bodyBackground, default: #ffffff]";
+  background-color: var(--bodyBackground);
+  border-radius: 4px;
+}
+
+.errorContainer {
+  padding: 20px;
+  text-align: center;
+  background-color: "[theme:errorBackground, default: #fde7e9]";
+  background-color: var(--errorBackground);
+  border-radius: 4px;
+  margin: 16px 0;
+}
+
+.commandBarContainer {
+  margin-bottom: 16px;
+  
+  :global {
+    .ms-CommandBar {
+      background-color: transparent;
+      border-bottom: 1px solid "[theme:neutralQuaternaryAlt, default: #e1dfdd]";
+      border-bottom: 1px solid var(--neutralQuaternaryAlt);
+      padding-bottom: 8px;
+    }
+  }
+}
+
+.filterPanel {
+  .filterSection {
+    margin-bottom: 20px;
+  }
+
+  .filterResults {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid "[theme:neutralQuaternaryAlt, default: #e1dfdd]";
+    border-top: 1px solid var(--neutralQuaternaryAlt);
+  }
+}
+
+.eventPanel {
+  .eventDetails {
+    .detailRow {
+      margin-bottom: 12px;
+    }
+
+    .statusBadge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+
+      &.approved {
+        background-color: "[theme:successBackground, default: #dff6dd]";
+        background-color: var(--successBackground);
+        color: "[theme:successText, default: #107c10]";
+        color: var(--successText);
+      }
+
+      &.pending {
+        background-color: "[theme:warningBackground, default: #fff4ce]";
+        background-color: var(--warningBackground);
+        color: "[theme:warningText, default: #797673]";
+        color: var(--warningText);
+      }
+
+      &.rejected {
+        background-color: "[theme:errorBackground, default: #fde7e9]";
+        background-color: var(--errorBackground);
+        color: "[theme:errorText, default: #a80000]";
+        color: var(--errorText);
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .teamCalendar {
+    padding: 10px;
+  }
+
+  .calendarContainer {
+    padding: 10px;
+    margin: 8px 0;
+
+    :global {
+      .fc-toolbar {
+        flex-direction: column;
+        gap: 8px;
+
+        .fc-toolbar-chunk {
+          display: flex;
+          justify-content: center;
+        }
+      }
+
+      .fc-button {
+        font-size: 12px;
+        padding: 4px 8px;
+      }
+
+      .fc-event {
+        font-size: 10px;
+        padding: 1px 2px;
+      }
+    }
+  }
+
+  .title {
+    font-size: 1.5em;
+  }
+}
+
+@media (max-width: 480px) {
+  .teamCalendar {
+    padding: 5px;
+  }
+
+  .calendarContainer {
+    padding: 5px;
+
+    :global {
+      .fc-toolbar-title {
+        font-size: 1.2em;
+      }
+
+      .fc-button {
+        font-size: 10px;
+        padding: 3px 6px;
+      }
+    }
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .teamCalendar {
+    border: 2px solid;
+  }
+
+  .calendarContainer {
+    border: 1px solid;
+  }
+
+  :global {
+    .fc-event {
+      border: 2px solid !important;
+    }
+
+    .fc-button {
+      border: 2px solid !important;
+    }
+  }
+}
+
+// Print styles
+@media print {
+  .teamCalendar {
+    background: white !important;
+    color: black !important;
+  }
+
+  .commandBarContainer {
+    display: none;
+  }
+
+  .calendarContainer {
+    box-shadow: none;
+    border: 1px solid black;
+  }
+
+  :global {
+    .fc-button {
+      display: none;
+    }
+
+    .fc-toolbar {
+      .fc-toolbar-chunk:first-child,
+      .fc-toolbar-chunk:last-child {
+        display: none;
+      }
+    }
+  }
+}

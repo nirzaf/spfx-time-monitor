@@ -1,52 +1,64 @@
 import { Version } from '@microsoft/sp-core-library';
 import {
-  type IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  IPropertyPaneConfiguration,
+  PropertyPaneTextField,
+  PropertyPaneDropdown,
+  PropertyPaneToggle,
+  PropertyPaneSlider
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
-import type { IReadonlyTheme } from '@microsoft/sp-component-base';
+import { IReadonlyTheme } from '@microsoft/sp-component-base';
+import { escape } from '@microsoft/sp-lodash-subset';
+
+import * as strings from 'LeaveAdministrationWebPartStrings';
+import styles from './LeaveAdministration.module.scss';
 
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 
-import LeaveRequestForm from './components/LeaveRequestForm';
-import { ILeaveRequestFormProps } from './components/ILeaveRequestFormProps';
-import * as strings from 'VacationRequestWebPartStrings';
+import LeaveAdministration from './components/LeaveAdministration';
+import { ILeaveAdministrationProps } from './components/ILeaveAdministrationProps';
 
-export interface IVacationRequestWebPartProps {
+export interface ILeaveAdministrationWebPartProps {
   title: string;
   description: string;
+  defaultView: string;
+  showPendingOnly: boolean;
+  itemsPerPage: number;
+  allowBulkActions: boolean;
 }
 
-export default class VacationRequestWebPart extends BaseClientSideWebPart<IVacationRequestWebPartProps> {
-
-  private _isDarkTheme: boolean = false;
-  private _environmentMessage: string = '';
+export default class LeaveAdministrationWebPart extends BaseClientSideWebPart<ILeaveAdministrationWebPartProps> {
 
   public render(): void {
-    const element: React.ReactElement<ILeaveRequestFormProps> = React.createElement(
-      LeaveRequestForm,
-      {
-        context: this.context,
-        title: this.properties.title,
-        description: this.properties.description,
-        isDarkTheme: this._isDarkTheme,
-        environmentMessage: this._environmentMessage,
-        hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
-      }
-    );
+    const element: React.ReactElement<ILeaveAdministrationProps> = React.createElement(
+          LeaveAdministration,
+          {
+            context: this.context,
+            title: this.properties.title,
+            description: this.properties.description,
+            defaultView: this.properties.defaultView,
+            showPendingOnly: this.properties.showPendingOnly,
+            itemsPerPage: this.properties.itemsPerPage,
+            allowBulkActions: this.properties.allowBulkActions,
+            isDarkTheme: this._isDarkTheme,
+            environmentMessage: this._environmentMessage,
+            hasTeamsContext: !!this.context.sdks.microsoftTeams,
+            userDisplayName: this.context.pageContext.user.displayName
+          }
+        );
 
     ReactDom.render(element, this.domElement);
   }
+
+  private _isDarkTheme: boolean = false;
+  private _environmentMessage: string = '';
 
   protected onInit(): Promise<void> {
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
     });
   }
-
-
 
   private _getEnvironmentMessage(): Promise<string> {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
@@ -61,13 +73,11 @@ export default class VacationRequestWebPart extends BaseClientSideWebPart<IVacat
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
-            case 'TeamsModern':
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
               break;
             default:
-              environmentMessage = strings.UnknownEnvironment;
+              throw new Error('Unknown host');
           }
-
           return environmentMessage;
         });
     }
@@ -90,7 +100,6 @@ export default class VacationRequestWebPart extends BaseClientSideWebPart<IVacat
       this.domElement.style.setProperty('--link', semanticColors.link || null);
       this.domElement.style.setProperty('--linkHovered', semanticColors.linkHovered || null);
     }
-
   }
 
   protected onDispose(): void {
@@ -117,6 +126,29 @@ export default class VacationRequestWebPart extends BaseClientSideWebPart<IVacat
                 }),
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneDropdown('defaultView', {
+                  label: 'Default View',
+                  options: [
+                    { key: 'pending', text: 'Pending Requests' },
+                    { key: 'all', text: 'All Requests' },
+                    { key: 'approved', text: 'Approved Requests' },
+                    { key: 'rejected', text: 'Rejected Requests' }
+                  ]
+                }),
+                PropertyPaneToggle('showPendingOnly', {
+                  label: 'Show Pending Only by Default'
+                }),
+                PropertyPaneSlider('itemsPerPage', {
+                  label: 'Items Per Page',
+                  min: 5,
+                  max: 50,
+                  value: 10,
+                  showValue: true,
+                  step: 5
+                }),
+                PropertyPaneToggle('allowBulkActions', {
+                  label: 'Allow Bulk Actions'
                 })
               ]
             }

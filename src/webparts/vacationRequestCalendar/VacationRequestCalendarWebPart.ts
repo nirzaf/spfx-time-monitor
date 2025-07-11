@@ -1,35 +1,42 @@
+import * as React from 'react';
+import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   type IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  PropertyPaneTextField,
+  PropertyPaneDropdown,
+  PropertyPaneCheckbox
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
-import type { IReadonlyTheme } from '@microsoft/sp-component-base';
+import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as React from 'react';
-import * as ReactDom from 'react-dom';
+import * as strings from 'VacationRequestCalendarWebPartStrings';
+import TeamCalendar from './components/TeamCalendar';
+import { ITeamCalendarProps } from './components/ITeamCalendarProps';
 
-import LeaveRequestForm from './components/LeaveRequestForm';
-import { ILeaveRequestFormProps } from './components/ILeaveRequestFormProps';
-import * as strings from 'VacationRequestWebPartStrings';
-
-export interface IVacationRequestWebPartProps {
+export interface IVacationRequestCalendarWebPartProps {
   title: string;
   description: string;
+  defaultView: string;
+  showWeekends: boolean;
+  allowExport: boolean;
 }
 
-export default class VacationRequestWebPart extends BaseClientSideWebPart<IVacationRequestWebPartProps> {
+export default class VacationRequestCalendarWebPart extends BaseClientSideWebPart<IVacationRequestCalendarWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<ILeaveRequestFormProps> = React.createElement(
-      LeaveRequestForm,
+    const element: React.ReactElement<ITeamCalendarProps> = React.createElement(
+      TeamCalendar,
       {
         context: this.context,
         title: this.properties.title,
         description: this.properties.description,
+        defaultView: this.properties.defaultView,
+        showWeekends: this.properties.showWeekends,
+        allowExport: this.properties.allowExport,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
@@ -113,10 +120,25 @@ export default class VacationRequestWebPart extends BaseClientSideWebPart<IVacat
               groupName: strings.BasicGroupName,
               groupFields: [
                 PropertyPaneTextField('title', {
-                  label: 'Web Part Title'
+                  label: 'Calendar Title'
                 }),
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneDropdown('defaultView', {
+                  label: 'Default View',
+                  options: [
+                    { key: 'dayGridMonth', text: 'Month' },
+                    { key: 'timeGridWeek', text: 'Week' },
+                    { key: 'timeGridDay', text: 'Day' }
+                  ],
+                  selectedKey: 'dayGridMonth'
+                }),
+                PropertyPaneCheckbox('showWeekends', {
+                  text: 'Show Weekends'
+                }),
+                PropertyPaneCheckbox('allowExport', {
+                  text: 'Allow Export'
                 })
               ]
             }

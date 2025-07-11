@@ -5,39 +5,46 @@ import {
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import type { IReadonlyTheme } from '@microsoft/sp-component-base';
+import { escape } from '@microsoft/sp-lodash-subset';
 
-import * as React from 'react';
-import * as ReactDom from 'react-dom';
+import styles from './VrcWebPart.module.scss';
+import * as strings from 'VrcWebPartStrings';
 
-import LeaveRequestForm from './components/LeaveRequestForm';
-import { ILeaveRequestFormProps } from './components/ILeaveRequestFormProps';
-import * as strings from 'VacationRequestWebPartStrings';
-
-export interface IVacationRequestWebPartProps {
-  title: string;
+export interface IVrcWebPartProps {
   description: string;
 }
 
-export default class VacationRequestWebPart extends BaseClientSideWebPart<IVacationRequestWebPartProps> {
+export default class VrcWebPart extends BaseClientSideWebPart<IVrcWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<ILeaveRequestFormProps> = React.createElement(
-      LeaveRequestForm,
-      {
-        context: this.context,
-        title: this.properties.title,
-        description: this.properties.description,
-        isDarkTheme: this._isDarkTheme,
-        environmentMessage: this._environmentMessage,
-        hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
-      }
-    );
-
-    ReactDom.render(element, this.domElement);
+    this.domElement.innerHTML = `
+    <section class="${styles.vrc} ${!!this.context.sdks.microsoftTeams ? styles.teams : ''}">
+      <div class="${styles.welcome}">
+        <img alt="" src="${this._isDarkTheme ? require('./assets/welcome-dark.png') : require('./assets/welcome-light.png')}" class="${styles.welcomeImage}" />
+        <h2>Well done, ${escape(this.context.pageContext.user.displayName)}!</h2>
+        <div>${this._environmentMessage}</div>
+        <div>Web part property value: <strong>${escape(this.properties.description)}</strong></div>
+      </div>
+      <div>
+        <h3>Welcome to SharePoint Framework!</h3>
+        <p>
+        The SharePoint Framework (SPFx) is a extensibility model for Microsoft Viva, Microsoft Teams and SharePoint. It's the easiest way to extend Microsoft 365 with automatic Single Sign On, automatic hosting and industry standard tooling.
+        </p>
+        <h4>Learn more about SPFx development:</h4>
+          <ul class="${styles.links}">
+            <li><a href="https://aka.ms/spfx" target="_blank">SharePoint Framework Overview</a></li>
+            <li><a href="https://aka.ms/spfx-yeoman-graph" target="_blank">Use Microsoft Graph in your solution</a></li>
+            <li><a href="https://aka.ms/spfx-yeoman-teams" target="_blank">Build for Microsoft Teams using SharePoint Framework</a></li>
+            <li><a href="https://aka.ms/spfx-yeoman-viva" target="_blank">Build for Microsoft Viva Connections using SharePoint Framework</a></li>
+            <li><a href="https://aka.ms/spfx-yeoman-store" target="_blank">Publish SharePoint Framework applications to the marketplace</a></li>
+            <li><a href="https://aka.ms/spfx-yeoman-api" target="_blank">SharePoint Framework API reference</a></li>
+            <li><a href="https://aka.ms/m365pnp" target="_blank">Microsoft 365 Developer Community</a></li>
+          </ul>
+      </div>
+    </section>`;
   }
 
   protected onInit(): Promise<void> {
@@ -93,10 +100,6 @@ export default class VacationRequestWebPart extends BaseClientSideWebPart<IVacat
 
   }
 
-  protected onDispose(): void {
-    ReactDom.unmountComponentAtNode(this.domElement);
-  }
-
   protected get dataVersion(): Version {
     return Version.parse('1.0');
   }
@@ -112,9 +115,6 @@ export default class VacationRequestWebPart extends BaseClientSideWebPart<IVacat
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('title', {
-                  label: 'Web Part Title'
-                }),
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
                 })

@@ -3,17 +3,23 @@ import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   type IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  PropertyPaneTextField,
+  PropertyPaneDropdown,
+  PropertyPaneSlider
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'VacationRcWebPartStrings';
-import VacationRc from './components/VacationRc';
-import { IVacationRcProps } from './components/IVacationRcProps';
+import LeaveHistory from './components/LeaveHistory';
+import { ILeaveHistoryProps } from './components/ILeaveHistoryProps';
 
 export interface IVacationRcWebPartProps {
+  title: string;
   description: string;
+  defaultView: string;
+  itemsPerPage: number;
+  showAnalytics: boolean;
 }
 
 export default class VacationRcWebPart extends BaseClientSideWebPart<IVacationRcWebPartProps> {
@@ -22,10 +28,15 @@ export default class VacationRcWebPart extends BaseClientSideWebPart<IVacationRc
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IVacationRcProps> = React.createElement(
-      VacationRc,
+    const element: React.ReactElement<ILeaveHistoryProps> = React.createElement(
+      LeaveHistory,
       {
+        context: this.context,
+        title: this.properties.title,
         description: this.properties.description,
+        defaultView: this.properties.defaultView,
+        itemsPerPage: this.properties.itemsPerPage,
+        showAnalytics: this.properties.showAnalytics,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
@@ -108,8 +119,27 @@ export default class VacationRcWebPart extends BaseClientSideWebPart<IVacationRc
             {
               groupName: strings.BasicGroupName,
               groupFields: [
+                PropertyPaneTextField('title', {
+                  label: 'Web Part Title'
+                }),
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneDropdown('defaultView', {
+                  label: 'Default View',
+                  options: [
+                    { key: 'list', text: 'List View' },
+                    { key: 'analytics', text: 'Analytics View' },
+                    { key: 'calendar', text: 'Calendar View' }
+                  ],
+                  selectedKey: 'list'
+                }),
+                PropertyPaneSlider('itemsPerPage', {
+                  label: 'Items Per Page',
+                  min: 5,
+                  max: 50,
+                  step: 5,
+                  value: 10
                 })
               ]
             }

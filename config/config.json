@@ -17,11 +17,39 @@
           "manifest": "./src/webparts/vacationRc/VacationRcWebPart.manifest.json"
         }
       ]
+    },
+    "vacation-request-calendar-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/vacationRequestCalendar/VacationRequestCalendarWebPart.js",
+          "manifest": "./src/webparts/vacationRequestCalendar/VacationRequestCalendarWebPart.manifest.json"
+        }
+      ]
+    },
+    "leave-administration-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/helloWorld/HelloWorldWebPart.js",
+          "manifest": "./src/webparts/helloWorld/HelloWorldWebPart.manifest.json"
+        }
+      ]
+    },
+    "vrc-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/vrc/VrcWebPart.js",
+          "manifest": "./src/webparts/vrc/VrcWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
   "localizedResources": {
     "VacationRequestWebPartStrings": "lib/webparts/vacationRequest/loc/{locale}.js",
-    "VacationRcWebPartStrings": "lib/webparts/vacationRc/loc/{locale}.js"
+    "VacationRcWebPartStrings": "lib/webparts/vacationRc/loc/{locale}.js",
+    "VacationRequestCalendarWebPartStrings": "lib/webparts/vacationRequestCalendar/loc/{locale}.js",
+    "LeaveAdministrationWebPartStrings": "lib/webparts/helloWorld/loc/{locale}.js",
+    "VrcWebPartStrings": "lib/webparts/vrc/loc/{locale}.js",
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
   }
 }

@@ -1,0 +1,186 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.leaveRequestForm {
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+}
+
+.container {
+  background: "[theme:bodyBackground, default: #ffffff]";
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+  border-bottom: 1px solid "[theme:neutralLight, default: #edebe9]";
+  padding-bottom: 20px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 600;
+  color: "[theme:themePrimary, default: #0078d4]";
+  margin: 0 0 8px 0;
+}
+
+.description {
+  font-size: 16px;
+  color: "[theme:bodySubtext, default: #605e5c]";
+  margin: 0 0 8px 0;
+}
+
+.welcome {
+  font-size: 14px;
+  color: "[theme:bodySubtext, default: #605e5c]";
+  margin: 0;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formField {
+  margin-bottom: 16px;
+}
+
+.dateSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dateField {
+  width: 100%;
+}
+
+.balanceInfo {
+  background: "[theme:neutralLighterAlt, default: #faf9f8]";
+  border: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-radius: 4px;
+  padding: 16px;
+  margin: 16px 0;
+  
+  p {
+    margin: 4px 0;
+    font-size: 14px;
+    
+    strong {
+      color: "[theme:themePrimary, default: #0078d4]";
+    }
+  }
+}
+
+.totalDays {
+  background: "[theme:themeLight, default: #c7e0f4]";
+  border: 1px solid "[theme:themePrimary, default: #0078d4]";
+  border-radius: 4px;
+  padding: 12px;
+  text-align: center;
+  font-size: 16px;
+  color: "[theme:themeDark, default: #005a70]";
+}
+
+.buttonSection {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start;
+  margin-top: 24px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.submitButton {
+  min-width: 140px;
+}
+
+.resetButton {
+  min-width: 100px;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  padding: 40px;
+}
+
+.successPanel {
+  padding: 20px;
+  
+  p {
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .leaveRequestForm {
+    padding: 12px;
+  }
+  
+  .container {
+    padding: 16px;
+  }
+  
+  .title {
+    font-size: 24px;
+  }
+  
+  .formField {
+    margin-bottom: 12px;
+  }
+}
+
+// Dark theme support
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: "[theme:bodyBackground, default: #1f1f1f]";
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+  }
+  
+  .balanceInfo {
+    background: "[theme:neutralLighterAlt, default: #2d2d2d]";
+    border-color: "[theme:neutralLight, default: #484644]";
+  }
+}
+
+// High contrast mode support
+@media (forced-colors: active) {
+  .container {
+    border: 1px solid;
+  }
+  
+  .balanceInfo {
+    border: 1px solid;
+  }
+  
+  .totalDays {
+    border: 2px solid;
+  }
+}
