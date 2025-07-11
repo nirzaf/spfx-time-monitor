@@ -1,4 +1,8 @@
-import { sp } from '@pnp/sp/presets/all';
+import { spfi, SPFI, SPFx } from '@pnp/sp';
+import '@pnp/sp/webs';
+import '@pnp/sp/lists';
+import '@pnp/sp/items';
+import '@pnp/sp/site-users/web';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { ILeaveRequest, ILeaveType, ILeaveBalance } from '../models/ILeaveModels';
 
@@ -6,13 +10,10 @@ import { ILeaveRequest, ILeaveType, ILeaveBalance } from '../models/ILeaveModels
  * SharePoint service for managing leave requests, types, and balances
  */
 export class SharePointService {
-  private context: WebPartContext;
+  private sp: SPFI;
 
   constructor(context: WebPartContext) {
-    this.context = context;
-    sp.setup({
-      spfxContext: context
-    });
+    this.sp = spfi().using(SPFx(context));
   }
 
   /**
@@ -20,12 +21,12 @@ export class SharePointService {
    */
   public async getLeaveTypes(): Promise<ILeaveType[]> {
     try {
-      const items = await sp.web.lists.getByTitle('Leave Types').items
+      const items = await this.sp.web.lists.getByTitle('Leave Types').items
         .select('ID', 'Title', 'Description', 'IsActive', 'RequiresApproval', 'MaxDaysPerRequest', 'RequiresDocumentation', 'ColorCode', 'PolicyURL')
         .filter('IsActive eq true')
-        .get();
+();
       
-      return items.map(item => ({
+      return items.map((item: any) => ({
         id: item.ID,
         title: item.Title,
         description: item.Description,
@@ -47,7 +48,7 @@ export class SharePointService {
    */
   public async createLeaveRequest(request: Partial<ILeaveRequest>): Promise<ILeaveRequest> {
     try {
-      const result = await sp.web.lists.getByTitle('Leave Requests').items.add({
+      const result = await this.sp.web.lists.getByTitle('Leave Requests').items.add({
         Title: `${request.leaveType} - ${request.startDate}`,
         RequesterId: request.requesterId,
         EmployeeID: request.employeeId,
@@ -96,14 +97,14 @@ export class SharePointService {
    */
   public async getUserLeaveRequests(userId: number): Promise<ILeaveRequest[]> {
     try {
-      const items = await sp.web.lists.getByTitle('Leave Requests').items
+      const items = await this.sp.web.lists.getByTitle('Leave Requests').items
         .select('*', 'LeaveType/Title', 'Requester/Title', 'Manager/Title')
         .expand('LeaveType', 'Requester', 'Manager')
         .filter(`RequesterId eq ${userId}`)
         .orderBy('SubmissionDate', false)
-        .get();
+();
 
-      return items.map(item => ({
+      return items.map((item: any) => ({
         id: item.ID,
         title: item.Title,
         requesterId: item.RequesterId,
@@ -134,13 +135,13 @@ export class SharePointService {
    */
   public async getAllLeaveRequests(): Promise<ILeaveRequest[]> {
     try {
-      const items = await sp.web.lists.getByTitle('Leave Requests').items
+      const items = await this.sp.web.lists.getByTitle('Leave Requests').items
         .select('*', 'LeaveType/Title', 'LeaveType/ColorCode', 'Requester/Title', 'Manager/Title')
         .expand('LeaveType', 'Requester', 'Manager')
         .filter('ApprovalStatus eq \'Approved\'')
-        .get();
+();
 
-      return items.map(item => ({
+      return items.map((item: any) => ({
         id: item.ID,
         title: item.Title,
         requesterId: item.RequesterId,
@@ -173,11 +174,11 @@ export class SharePointService {
    */
   public async getUserLeaveBalance(userId: number, leaveTypeId: number): Promise<ILeaveBalance | null> {
     try {
-      const items = await sp.web.lists.getByTitle('Leave Balances').items
+      const items = await this.sp.web.lists.getByTitle('Leave Balances').items
         .select('*', 'LeaveType/Title')
         .expand('LeaveType')
         .filter(`EmployeeId eq ${userId} and LeaveTypeId eq ${leaveTypeId}`)
-        .get();
+();
 
       if (items.length > 0) {
         const item = items[0];
@@ -215,7 +216,7 @@ export class SharePointService {
         updateData.ApprovalComments = comments;
       }
 
-      await sp.web.lists.getByTitle('Leave Requests').items.getById(requestId).update(updateData);
+      await this.sp.web.lists.getByTitle('Leave Requests').items.getById(requestId).update(updateData);
     } catch (error) {
       console.error('Error updating leave request status:', error);
       throw error;
@@ -227,7 +228,7 @@ export class SharePointService {
    */
   public async getCurrentUser(): Promise<{ id: number; title: string; email: string }> {
     try {
-      const user = await sp.web.currentUser.get();
+      const user = await this.sp.web.currentUser();
       return {
         id: user.Id,
         title: user.Title,
