@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Stack,
   Text,
@@ -30,16 +30,13 @@ import {
   TooltipHost,
   Icon
 } from '@fluentui/react';
-// import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-// import { Bar } from 'react-chartjs-2';
 // import styles from './LeaveHistory.module.scss';
 import type { ILeaveHistoryProps } from './ILeaveHistoryProps';
 import { SharePointService } from '../../../services/SharePointService';
 import { ILeaveRequest, ILeaveStatistics } from '../../../models/ILeaveModels';
 import * as moment from 'moment';
 
-// Register Chart.js components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
+
 
 interface ILeaveHistoryState {
   leaveRequests: ILeaveRequest[];
@@ -93,7 +90,7 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
     loadLeaveHistory();
   }, [props]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     filterRequests();
     calculateStatistics();
   }, [
@@ -553,7 +550,8 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
                     <Stack>
                       <Text variant="large">Leave Types Breakdown</Text>
                       <div className={styles.chartContainer}>
-                        <Doughnut data={leaveTypeChartData} options={{ responsive: true, maintainAspectRatio: false }} />
+                        {/* Chart component would go here */}
+                        <Text>Chart visualization coming soon</Text>
                       </div>
                     </Stack>
                   </Card>
@@ -561,7 +559,8 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
                     <Stack>
                       <Text variant="large">Monthly Usage</Text>
                       <div className={styles.chartContainer}>
-                        <Bar data={monthlyChartData} options={{ responsive: true, maintainAspectRatio: false }} />
+                        {/* Chart component would go here */}
+                        <Text>Chart visualization coming soon</Text>
                       </div>
                     </Stack>
                   </Card>
