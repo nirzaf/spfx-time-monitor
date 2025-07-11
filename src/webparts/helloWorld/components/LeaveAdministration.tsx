@@ -25,14 +25,10 @@ import {
   DialogType,
   DialogFooter,
   SearchBox,
-  Separator,
   TooltipHost,
   Icon,
   Pivot,
   PivotItem,
-  Card,
-  ICardTokens,
-  Checkbox,
   Label,
   ProgressIndicator
 } from '@fluentui/react';
@@ -89,6 +85,24 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
   });
 
   /**
+   * Calculate statistics for the dashboard
+   */
+  const calculateStatistics = (requests: ILeaveRequest[]) => {
+    const stats: ILeaveStatistics = {
+      totalRequests: requests.length,
+      pendingRequests: requests.filter(r => r.approvalStatus === 'Pending').length,
+      approvedRequests: requests.filter(r => r.approvalStatus === 'Approved').length,
+      rejectedRequests: requests.filter(r => r.approvalStatus === 'Rejected').length,
+      totalDaysRequested: requests.reduce((sum, r) => sum + (r.totalDays || 0), 0),
+      totalDaysApproved: requests
+        .filter(r => r.approvalStatus === 'Approved')
+        .reduce((sum, r) => sum + (r.totalDays || 0), 0)
+    };
+
+    setStatistics(stats);
+  };
+
+  /**
    * Load leave requests from SharePoint
    */
   const loadLeaveRequests = useCallback(async () => {
@@ -126,11 +140,18 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
       // This would typically load from User Information List or similar
       // For now, we'll extract unique users from leave requests
       const uniqueUsers = leaveRequests.reduce((acc, request) => {
-        if (!acc.find(user => user.id === request.employeeId)) {
+        let userExists = false;
+        for (let i = 0; i < acc.length; i++) {
+          if (acc[i].id === request.employeeId) {
+            userExists = true;
+            break;
+          }
+        }
+        if (!userExists) {
           acc.push({
-            id: request.employeeId,
+            id: request.employeeId ? parseInt(request.employeeId, 10) || 0 : 0,
             displayName: request.requesterName,
-            email: request.employeeEmail || '',
+            email: request.employeeId || '',
             department: request.department || ''
           });
         }
@@ -143,44 +164,6 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
   }, [leaveRequests]);
 
   /**
-   * Calculate statistics for the dashboard
-   */
-  const calculateStatistics = (requests: ILeaveRequest[]) => {
-    const stats: ILeaveStatistics = {
-      totalRequests: requests.length,
-      pendingRequests: requests.filter(r => r.status === 'Pending').length,
-      approvedRequests: requests.filter(r => r.status === 'Approved').length,
-      rejectedRequests: requests.filter(r => r.status === 'Rejected').length,
-      totalDaysRequested: requests.reduce((sum, r) => sum + r.totalDays, 0),
-      leaveTypeBreakdown: {},
-      monthlyBreakdown: {},
-      departmentBreakdown: {}
-    };
-
-    // Calculate leave type breakdown
-    requests.forEach(request => {
-      stats.leaveTypeBreakdown[request.leaveType] = 
-        (stats.leaveTypeBreakdown[request.leaveType] || 0) + 1;
-    });
-
-    // Calculate monthly breakdown
-    requests.forEach(request => {
-      const month = new Date(request.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-      stats.monthlyBreakdown[month] = (stats.monthlyBreakdown[month] || 0) + 1;
-    });
-
-    // Calculate department breakdown
-    requests.forEach(request => {
-      if (request.department) {
-        stats.departmentBreakdown[request.department] = 
-          (stats.departmentBreakdown[request.department] || 0) + 1;
-      }
-    });
-
-    setStatistics(stats);
-  };
-
-  /**
    * Filter requests based on current filters
    */
   const filterRequests = useCallback(() => {
@@ -191,11 +174,11 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
       filtered = filtered.filter(request => {
         switch (selectedView) {
           case 'pending':
-            return request.status === 'Pending';
+            return request.approvalStatus === 'Pending';
           case 'approved':
-            return request.status === 'Approved';
+            return request.approvalStatus === 'Approved';
           case 'rejected':
-            return request.status === 'Rejected';
+            return request.approvalStatus === 'Rejected';
           default:
             return true;
         }
@@ -205,15 +188,15 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
     // Filter by search text
     if (searchText) {
       filtered = filtered.filter(request =>
-        request.requesterName?.toLowerCase().includes(searchText.toLowerCase()) ||
-        request.leaveType.toLowerCase().includes(searchText.toLowerCase()) ||
-        (request.comments && request.comments.toLowerCase().includes(searchText.toLowerCase()))
+        (request.requesterName && request.requesterName.toLowerCase().indexOf(searchText.toLowerCase()) !== -1) ||
+        (request.leaveType && request.leaveType.toLowerCase().indexOf(searchText.toLowerCase()) !== -1) ||
+        (request.requestComments && request.requestComments.toLowerCase().indexOf(searchText.toLowerCase()) !== -1)
       );
     }
 
     // Filter by status
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(request => request.status === statusFilter);
+      filtered = filtered.filter(request => request.approvalStatus === statusFilter);
     }
 
     // Filter by leave type
@@ -228,10 +211,10 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
 
     // Filter by date range
     if (dateFromFilter) {
-      filtered = filtered.filter(request => new Date(request.startDate) >= dateFromFilter);
+      filtered = filtered.filter(request => request.startDate && new Date(request.startDate) >= dateFromFilter);
     }
     if (dateToFilter) {
-      filtered = filtered.filter(request => new Date(request.endDate) <= dateToFilter);
+      filtered = filtered.filter(request => request.endDate && new Date(request.endDate) <= dateToFilter);
     }
 
     setFilteredRequests(filtered);
@@ -252,7 +235,7 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
         setMessage({ text: 'Request deleted successfully', type: MessageBarType.success });
       } else {
         await sharePointService.updateLeaveRequestStatus(
-          selectedRequest.id,
+          selectedRequest.id || 0,
           dialogAction === 'approve' ? 'Approved' : 'Rejected',
           actionComment
         );
@@ -285,7 +268,7 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
       
       for (const request of bulkSelectedItems) {
         await sharePointService.updateLeaveRequestStatus(
-          request.id,
+          request.id || 0,
           bulkAction === 'approve' ? 'Approved' : 'Rejected',
           actionComment
         );
@@ -317,13 +300,13 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
     const csvContent = [
       headers.join(','),
       ...filteredRequests.map(request => [
-        request.requesterName,
-        request.leaveType,
-        new Date(request.startDate).toLocaleDateString(),
-        new Date(request.endDate).toLocaleDateString(),
-        request.totalDays,
-        request.status,
-        request.comments || ''
+        request.requesterName || '',
+        request.leaveType || '',
+        request.startDate ? new Date(request.startDate).toLocaleDateString() : '',
+        request.endDate ? new Date(request.endDate).toLocaleDateString() : '',
+        request.totalDays || 0,
+        request.approvalStatus || '',
+        request.requestComments || ''
       ].map(field => `"${field}"`).join(','))
     ].join('\n');
 
@@ -338,14 +321,14 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
 
   // Load data on component mount
   useEffect(() => {
-    loadLeaveRequests();
-    loadLeaveTypes();
+    void loadLeaveRequests();
+    void loadLeaveTypes();
   }, [loadLeaveRequests, loadLeaveTypes]);
 
   // Load users when leave requests change
   useEffect(() => {
     if (leaveRequests.length > 0) {
-      loadUsers();
+      void loadUsers();
     }
   }, [leaveRequests, loadUsers]);
 
@@ -411,12 +394,12 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
 
   const leaveTypeOptions: IDropdownOption[] = [
     { key: 'all', text: 'All Leave Types' },
-    ...leaveTypes.map(type => ({ key: type.name, text: type.name }))
+    ...leaveTypes.map(type => ({ key: type.title || '', text: type.title || '' }))
   ];
 
   const userOptions: IDropdownOption[] = [
     { key: 'all', text: 'All Users' },
-    ...users.map(user => ({ key: user.id, text: user.displayName }))
+    ...users.map(user => ({ key: user.id || 0, text: user.displayName || '' }))
   ];
 
   // Table columns
@@ -457,20 +440,20 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
       maxWidth: 220,
       isResizable: true,
       onRender: (item: ILeaveRequest) => (
-        <Stack>
-          <Text variant="small">
-            {new Date(item.startDate).toLocaleDateString()} - {new Date(item.endDate).toLocaleDateString()}
-          </Text>
-          <Text variant="small" styles={{ root: { color: '#605e5c' } }}>
-            {item.totalDays} day{item.totalDays !== 1 ? 's' : ''}
-          </Text>
-        </Stack>
-      )
+            <Stack>
+              <Text variant="small">
+                {item.startDate ? new Date(item.startDate).toLocaleDateString() : 'N/A'} - {item.endDate ? new Date(item.endDate).toLocaleDateString() : 'N/A'}
+              </Text>
+              <Text variant="small" styles={{ root: { color: '#605e5c' } }}>
+                {item.totalDays || 0} day{(item.totalDays || 0) !== 1 ? 's' : ''}
+              </Text>
+            </Stack>
+          )
     },
     {
       key: 'status',
       name: 'Status',
-      fieldName: 'status',
+      fieldName: 'approvalStatus',
       minWidth: 100,
       maxWidth: 120,
       isResizable: true,
@@ -496,26 +479,26 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
         return (
           <div className={styles.statusCell}>
             <Icon 
-              iconName={getStatusIcon(item.status)} 
-              styles={{ root: { color: getStatusColor(item.status), marginRight: 8 } }} 
+              iconName={getStatusIcon(item.approvalStatus || '')} 
+              styles={{ root: { color: getStatusColor(item.approvalStatus || ''), marginRight: 8 } }} 
             />
-            <span style={{ color: getStatusColor(item.status), fontWeight: 500 }}>
-              {item.status}
+            <span style={{ color: getStatusColor(item.approvalStatus || ''), fontWeight: 500 }}>
+              {item.approvalStatus || 'Unknown'}
             </span>
           </div>
         );
       }
     },
     {
-      key: 'submittedDate',
+      key: 'submissionDate',
       name: 'Submitted',
-      fieldName: 'submittedDate',
+      fieldName: 'submissionDate',
       minWidth: 100,
       maxWidth: 120,
       isResizable: true,
       onRender: (item: ILeaveRequest) => (
         <Text variant="small">
-          {new Date(item.submittedDate).toLocaleDateString()}
+          {item.submissionDate ? new Date(item.submissionDate).toLocaleDateString() : 'N/A'}
         </Text>
       )
     },
@@ -538,7 +521,7 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
               }}
             />
           </TooltipHost>
-          {item.status === 'Pending' && (
+          {item.approvalStatus === 'Pending' && (
             <>
               <TooltipHost content="Approve">
                 <Icon 
@@ -576,7 +559,7 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
   const endIndex = startIndex + itemsPerPage;
   const currentItems = filteredRequests.slice(startIndex, endIndex);
 
-  const cardTokens: ICardTokens = { childrenMargin: 12 };
+
 
   if (loading) {
     return (
@@ -628,60 +611,60 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
       {selectedView === 'dashboard' && statistics ? (
         <div className={styles.analyticsContainer}>
           <div className={styles.statsGrid}>
-            <Card tokens={cardTokens} className={styles.statCard}>
+            <div className={styles.statCard}>
               <Text variant="xxLarge" className={styles.statNumber}>
                 {statistics.totalRequests}
               </Text>
               <Text variant="medium">Total Requests</Text>
-            </Card>
-            <Card tokens={cardTokens} className={styles.statCard}>
+            </div>
+            <div className={styles.statCard}>
               <Text variant="xxLarge" className={styles.statNumber}>
                 {statistics.pendingRequests}
               </Text>
               <Text variant="medium">Pending</Text>
-            </Card>
-            <Card tokens={cardTokens} className={styles.statCard}>
+            </div>
+            <div className={styles.statCard}>
               <Text variant="xxLarge" className={styles.statNumber}>
                 {statistics.approvedRequests}
               </Text>
               <Text variant="medium">Approved</Text>
-            </Card>
-            <Card tokens={cardTokens} className={styles.statCard}>
+            </div>
+            <div className={styles.statCard}>
               <Text variant="xxLarge" className={styles.statNumber}>
                 {statistics.rejectedRequests}
               </Text>
               <Text variant="medium">Rejected</Text>
-            </Card>
-            <Card tokens={cardTokens} className={styles.statCard}>
+            </div>
+            <div className={styles.statCard}>
               <Text variant="xxLarge" className={styles.statNumber}>
                 {statistics.totalDaysRequested}
               </Text>
               <Text variant="medium">Total Days</Text>
-            </Card>
+            </div>
           </div>
 
           <Stack horizontal tokens={{ childrenGap: 20 }} wrap>
-            <Card tokens={cardTokens} className={styles.chartCard}>
+            <div className={styles.chartCard}>
               <Text variant="large" styles={{ root: { fontWeight: 600, marginBottom: 16 } }}>
                 Requests by Status
               </Text>
               <ProgressIndicator 
                 label="Approved" 
-                percentComplete={statistics.approvedRequests / statistics.totalRequests}
+                percentComplete={((statistics.approvedRequests || 0) / (statistics.totalRequests || 1))}
                 styles={{ root: { marginBottom: 8 } }}
               />
               <ProgressIndicator 
                 label="Pending" 
-                percentComplete={statistics.pendingRequests / statistics.totalRequests}
+                percentComplete={((statistics.pendingRequests || 0) / (statistics.totalRequests || 1))}
                 styles={{ root: { marginBottom: 8 } }}
               />
               <ProgressIndicator 
                 label="Rejected" 
-                percentComplete={statistics.rejectedRequests / statistics.totalRequests}
+                percentComplete={((statistics.rejectedRequests || 0) / (statistics.totalRequests || 1))}
               />
-            </Card>
+            </div>
 
-            <Card tokens={cardTokens} className={styles.chartCard}>
+            <div className={styles.chartCard}>
               <Text variant="large" styles={{ root: { fontWeight: 600, marginBottom: 16 } }}>
                 Leave Types
               </Text>
@@ -693,7 +676,7 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
                 <Text>Days Approved</Text>
                 <Text styles={{ root: { fontWeight: 600 } }}>{statistics.totalDaysApproved || 0}</Text>
               </Stack>
-            </Card>
+            </div>
           </Stack>
         </div>
       ) : (
