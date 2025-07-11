@@ -221,4 +221,21 @@ export class SharePointService {
       throw error;
     }
   }
+
+  /**
+   * Get current user information
+   */
+  public async getCurrentUser(): Promise<{ id: number; title: string; email: string }> {
+    try {
+      const user = await sp.web.currentUser.get();
+      return {
+        id: user.Id,
+        title: user.Title,
+        email: user.Email
+      };
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+      throw error;
+    }
+  }
 }

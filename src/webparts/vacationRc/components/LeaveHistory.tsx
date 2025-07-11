@@ -96,13 +96,11 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
       
-      // Get current user ID from context
-      const currentUser = await context.msGraphClientFactory.getClient().then(client => 
-        client.api('/me').get()
-      );
+      // Get current user ID from SharePoint
+      const currentUser = await sharePointService.getCurrentUser();
       const userId = currentUser.id;
       
-      const requests = await sharePointService.getUserLeaveRequests(parseInt(userId));
+      const requests = await sharePointService.getUserLeaveRequests(userId);
       
       setState(prev => ({
         ...prev,

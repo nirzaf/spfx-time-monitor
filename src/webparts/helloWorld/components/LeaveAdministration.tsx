@@ -129,7 +129,7 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
         if (!acc.find(user => user.id === request.employeeId)) {
           acc.push({
             id: request.employeeId,
-            displayName: request.employeeName,
+            displayName: request.requesterName,
             email: request.employeeEmail || '',
             department: request.department || ''
           });
@@ -205,7 +205,7 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
     // Filter by search text
     if (searchText) {
       filtered = filtered.filter(request =>
-        request.employeeName.toLowerCase().includes(searchText.toLowerCase()) ||
+        request.requesterName?.toLowerCase().includes(searchText.toLowerCase()) ||
         request.leaveType.toLowerCase().includes(searchText.toLowerCase()) ||
         (request.comments && request.comments.toLowerCase().includes(searchText.toLowerCase()))
       );
@@ -317,7 +317,7 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
     const csvContent = [
       headers.join(','),
       ...filteredRequests.map(request => [
-        request.employeeName,
+        request.requesterName,
         request.leaveType,
         new Date(request.startDate).toLocaleDateString(),
         new Date(request.endDate).toLocaleDateString(),
@@ -422,16 +422,16 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
   // Table columns
   const columns: IColumn[] = [
     {
-      key: 'employeeName',
+      key: 'requesterName',
       name: 'Employee',
-      fieldName: 'employeeName',
+      fieldName: 'requesterName',
       minWidth: 150,
       maxWidth: 200,
       isResizable: true,
       onRender: (item: ILeaveRequest) => (
         <Stack>
           <Text variant="medium" styles={{ root: { fontWeight: 600 } }}>
-            {item.employeeName}
+            {item.requesterName}
           </Text>
           {item.department && (
             <Text variant="small" styles={{ root: { color: '#605e5c' } }}>
@@ -685,12 +685,14 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
               <Text variant="large" styles={{ root: { fontWeight: 600, marginBottom: 16 } }}>
                 Leave Types
               </Text>
-              {Object.entries(statistics.leaveTypeBreakdown).map(([type, count]) => (
-                <Stack key={type} horizontal horizontalAlign="space-between" styles={{ root: { marginBottom: 8 } }}>
-                  <Text>{type}</Text>
-                  <Text styles={{ root: { fontWeight: 600 } }}>{count}</Text>
-                </Stack>
-              ))}
+              <Stack horizontal horizontalAlign="space-between" styles={{ root: { marginBottom: 8 } }}>
+                <Text>Total Requests</Text>
+                <Text styles={{ root: { fontWeight: 600 } }}>{statistics.totalRequests || 0}</Text>
+              </Stack>
+              <Stack horizontal horizontalAlign="space-between" styles={{ root: { marginBottom: 8 } }}>
+                <Text>Days Approved</Text>
+                <Text styles={{ root: { fontWeight: 600 } }}>{statistics.totalDaysApproved || 0}</Text>
+              </Stack>
             </Card>
           </Stack>
         </div>
@@ -731,14 +733,14 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
               />
               <DatePicker
                 label="From Date"
-                value={dateFromFilter}
-                onSelectDate={setDateFromFilter}
+                value={dateFromFilter || undefined}
+                onSelectDate={(date) => setDateFromFilter(date || null)}
                 styles={{ root: { width: 150 } }}
               />
               <DatePicker
                 label="To Date"
-                value={dateToFilter}
-                onSelectDate={setDateToFilter}
+                value={dateToFilter || undefined}
+                onSelectDate={(date) => setDateToFilter(date || null)}
                 styles={{ root: { width: 150 } }}
               />
             </div>
@@ -802,7 +804,7 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
           <div className={styles.detailsPanel}>
             <div className={styles.detailRow}>
               <Label>Employee</Label>
-              <Text>{selectedRequest.employeeName}</Text>
+              <Text>{selectedRequest.requesterName}</Text>
             </div>
             <div className={styles.detailRow}>
               <Label>Leave Type</Label>
@@ -810,11 +812,11 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
             </div>
             <div className={styles.detailRow}>
               <Label>Start Date</Label>
-              <Text>{new Date(selectedRequest.startDate).toLocaleDateString()}</Text>
+              <Text>{selectedRequest.startDate ? new Date(selectedRequest.startDate).toLocaleDateString() : 'N/A'}</Text>
             </div>
             <div className={styles.detailRow}>
               <Label>End Date</Label>
-              <Text>{new Date(selectedRequest.endDate).toLocaleDateString()}</Text>
+              <Text>{selectedRequest.endDate ? new Date(selectedRequest.endDate).toLocaleDateString() : 'N/A'}</Text>
             </div>
             <div className={styles.detailRow}>
               <Label>Total Days</Label>
@@ -822,22 +824,22 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
             </div>
             <div className={styles.detailRow}>
               <Label>Status</Label>
-              <div className={`${styles.statusBadge} ${styles[selectedRequest.status.toLowerCase()]}`}>
-                {selectedRequest.status}
+              <div className={`${styles.statusBadge} ${selectedRequest.approvalStatus ? styles[selectedRequest.approvalStatus.toLowerCase() as keyof typeof styles] || '' : ''}`}>
+                {selectedRequest.approvalStatus}
               </div>
             </div>
-            {selectedRequest.comments && (
+            {selectedRequest.requestComments && (
               <div className={styles.detailRow}>
                 <Label>Comments</Label>
-                <Text>{selectedRequest.comments}</Text>
+                <Text>{selectedRequest.requestComments}</Text>
               </div>
             )}
             <div className={styles.detailRow}>
               <Label>Submitted Date</Label>
-              <Text>{new Date(selectedRequest.submittedDate).toLocaleDateString()}</Text>
+              <Text>{selectedRequest.submissionDate ? new Date(selectedRequest.submissionDate).toLocaleDateString() : 'N/A'}</Text>
             </div>
             
-            {selectedRequest.status === 'Pending' && (
+            {selectedRequest.approvalStatus === 'Pending' && (
               <Stack horizontal tokens={{ childrenGap: 10 }} styles={{ root: { marginTop: 20 } }}>
                 <PrimaryButton
                   text="Approve"
@@ -869,7 +871,7 @@ const LeaveAdministration: React.FC<ILeaveAdministrationProps> = (props) => {
           type: DialogType.normal,
           title: `${dialogAction.charAt(0).toUpperCase() + dialogAction.slice(1)} Leave Request`,
           subText: selectedRequest ? 
-            `Are you sure you want to ${dialogAction} the leave request for ${selectedRequest.employeeName}?` :
+            `Are you sure you want to ${dialogAction} the leave request for ${selectedRequest.requesterName}?` :
             ''
         }}
       >

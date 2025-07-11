@@ -8,10 +8,7 @@ import {
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
-import { escape } from '@microsoft/sp-lodash-subset';
-
 import * as strings from 'LeaveAdministrationWebPartStrings';
-import styles from './LeaveAdministration.module.scss';
 
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
