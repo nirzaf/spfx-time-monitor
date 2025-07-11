@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "vacation-request-calendar-client-side-solution",
+    "id": "321c024c-732f-4336-b05b-5192cc52f2d7",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.21.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "vacation-request-calendar description"
+      },
+      "longDescription": {
+        "default": "vacation-request-calendar description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "vacation-request-calendar Feature",
+        "description": "The feature that activates elements of the vacation-request-calendar solution.",
+        "id": "da079f48-9819-4f1d-8854-9f9a5336aa69",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/vacation-request-calendar.sppkg"
+  }
+}

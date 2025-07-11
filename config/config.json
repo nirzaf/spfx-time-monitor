@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "vacation-request-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/vacationRequest/VacationRequestWebPart.js",
+          "manifest": "./src/webparts/vacationRequest/VacationRequestWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "VacationRequestWebPartStrings": "lib/webparts/vacationRequest/loc/{locale}.js"
+  }
+}

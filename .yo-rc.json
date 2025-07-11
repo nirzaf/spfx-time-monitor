@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.14.0",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "vacation-request-calendar",
+    "libraryId": "321c024c-732f-4336-b05b-5192cc52f2d7",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "vacation-request-calendar",
+    "solutionShortDescription": "vacation-request-calendar description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
