@@ -9,10 +9,19 @@
           "manifest": "./src/webparts/vacationRequest/VacationRequestWebPart.manifest.json"
         }
       ]
+    },
+    "vacation-rc-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/vacationRc/VacationRcWebPart.js",
+          "manifest": "./src/webparts/vacationRc/VacationRcWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
   "localizedResources": {
-    "VacationRequestWebPartStrings": "lib/webparts/vacationRequest/loc/{locale}.js"
+    "VacationRequestWebPartStrings": "lib/webparts/vacationRequest/loc/{locale}.js",
+    "VacationRcWebPartStrings": "lib/webparts/vacationRc/loc/{locale}.js"
   }
 }
