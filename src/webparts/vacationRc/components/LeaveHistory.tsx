@@ -30,9 +30,9 @@ import {
   TooltipHost,
   Icon
 } from '@fluentui/react';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
-import { Bar, Doughnut } from 'react-chartjs-2';
-import styles from './LeaveHistory.module.scss';
+// import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+// import { Bar } from 'react-chartjs-2';
+// import styles from './LeaveHistory.module.scss';
 import type { ILeaveHistoryProps } from './ILeaveHistoryProps';
 import { SharePointService } from '../../../services/SharePointService';
 import { ILeaveRequest, ILeaveStatistics } from '../../../models/ILeaveModels';
@@ -89,9 +89,9 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
 
   const sharePointService = new SharePointService(context);
 
-  useEffect(() => {
+  React.useEffect(() => {
     loadLeaveHistory();
-  }, []);
+  }, [props]);
 
   useEffect(() => {
     filterRequests();
@@ -133,9 +133,9 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
     if (state.searchText) {
       const searchLower = state.searchText.toLowerCase();
       filtered = filtered.filter(req => 
-        req.leaveType?.toLowerCase().includes(searchLower) ||
-        req.requestComments?.toLowerCase().includes(searchLower) ||
-        req.approvalStatus?.toLowerCase().includes(searchLower)
+        req.leaveType?.toLowerCase().indexOf(searchLower) !== -1 ||
+        req.requestComments?.toLowerCase().indexOf(searchLower) !== -1 ||
+        req.approvalStatus?.toLowerCase().indexOf(searchLower) !== -1
       );
     }
 
