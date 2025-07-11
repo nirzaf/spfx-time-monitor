@@ -16,21 +16,16 @@ import {
   Panel,
   PanelType,
   DefaultButton,
-  PrimaryButton,
   MessageBar,
   MessageBarType,
   Spinner,
   SpinnerSize,
   Pivot,
   PivotItem,
-  Card,
-  ICardTokens,
   SearchBox,
-  Separator,
-  TooltipHost,
   Icon
 } from '@fluentui/react';
-// import styles from './LeaveHistory.module.scss';
+
 import type { ILeaveHistoryProps } from './ILeaveHistoryProps';
 import { SharePointService } from '../../../services/SharePointService';
 import { ILeaveRequest, ILeaveStatistics } from '../../../models/ILeaveModels';
@@ -62,8 +57,7 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
     title,
     defaultView,
     itemsPerPage,
-    showAnalytics,
-    isDarkTheme
+    showAnalytics
   } = props;
 
   const [state, setState] = useState<ILeaveHistoryState>({
@@ -88,26 +82,27 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
 
   React.useEffect(() => {
     loadLeaveHistory();
-  }, [props]);
+  }, []);
 
   React.useEffect(() => {
-    filterRequests();
+    applyFilters();
+  }, [state.searchText, state.selectedStatus, state.selectedLeaveType, state.selectedYear, state.startDate, state.endDate, state.leaveRequests]);
+
+  React.useEffect(() => {
     calculateStatistics();
-  }, [
-    state.leaveRequests,
-    state.searchText,
-    state.selectedStatus,
-    state.selectedLeaveType,
-    state.selectedYear,
-    state.startDate,
-    state.endDate
-  ]);
+  }, [state.filteredRequests]);
 
   const loadLeaveHistory = async (): Promise<void> => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
       
-      const requests = await sharePointService.getUserLeaveRequests();
+      // Get current user ID from context
+      const currentUser = await context.msGraphClientFactory.getClient().then(client => 
+        client.api('/me').get()
+      );
+      const userId = currentUser.id;
+      
+      const requests = await sharePointService.getUserLeaveRequests(parseInt(userId));
       
       setState(prev => ({
         ...prev,
@@ -123,7 +118,7 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
     }
   };
 
-  const filterRequests = (): void => {
+  const applyFilters = (): void => {
     let filtered = [...state.leaveRequests];
 
     // Text search
@@ -243,7 +238,7 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
       key: 'refresh',
       text: 'Refresh',
       iconProps: { iconName: 'Refresh' },
-      onClick: loadLeaveHistory
+      onClick: () => loadLeaveHistory()
     },
     {
       key: 'export',
@@ -286,7 +281,7 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
       minWidth: 80,
       maxWidth: 100,
       onRender: (item: ILeaveRequest) => (
-        <div className={styles.statusCell}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
           <Icon 
             iconName={getStatusIcon(item.approvalStatus || '')} 
             style={{ color: getStatusColor(item.approvalStatus || ''), marginRight: 8 }}
@@ -351,7 +346,7 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
     }
   ];
 
-  const cardTokens: ICardTokens = { childrenMargin: 12 };
+
 
   // Pagination
   const totalPages = Math.ceil(state.filteredRequests.length / itemsPerPage);
@@ -359,31 +354,11 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
   const endIndex = startIndex + itemsPerPage;
   const currentItems = state.filteredRequests.slice(startIndex, endIndex);
 
-  // Chart data - simplified since breakdown properties don't exist in ILeaveStatistics
-  const leaveTypeChartData = {
-    labels: ['Vacation', 'Sick', 'Personal'],
-    datasets: [{
-      data: [0, 0, 0], // Placeholder data
-      backgroundColor: [
-        '#0078d4',
-        '#d13438',
-        '#107c10'
-      ]
-    }]
-  };
 
-  const monthlyChartData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    datasets: [{
-      label: 'Days Taken',
-      data: [0, 0, 0, 0, 0, 0], // Placeholder data
-      backgroundColor: '#0078d4'
-    }]
-  };
 
   if (state.loading) {
     return (
-      <div className={styles.leaveHistory}>
+      <div style={{ padding: '20px' }}>
         <Stack horizontalAlign="center" verticalAlign="center" style={{ height: '200px' }}>
           <Spinner size={SpinnerSize.large} label="Loading leave history..." />
         </Stack>
@@ -392,10 +367,10 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
   }
 
   return (
-    <div className={`${styles.leaveHistory} ${isDarkTheme ? styles.dark : ''}`}>
+    <div style={{ padding: '20px' }}>
       <Stack tokens={{ childrenGap: 20 }}>
         {title && (
-          <Text variant="xxLarge" className={styles.title}>
+          <Text variant="xxLarge" style={{ fontWeight: 'bold', marginBottom: '10px' }}>
             {title}
           </Text>
         )}
@@ -409,7 +384,7 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
         <CommandBar items={commandBarItems} />
 
         {/* Filters */}
-        <Card tokens={cardTokens}>
+        <div style={{ padding: '16px', border: '1px solid #e1e1e1', borderRadius: '4px' }}>
           <Stack tokens={{ childrenGap: 15 }}>
             <Text variant="large">Filters</Text>
             <Stack horizontal tokens={{ childrenGap: 15 }} wrap>
@@ -466,7 +441,7 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
               />
             </Stack>
           </Stack>
-        </Card>
+        </div>
 
         <Pivot
           selectedKey={state.selectedView}
@@ -510,60 +485,60 @@ const LeaveHistory: React.FC<ILeaveHistoryProps> = (props) => {
               <Stack tokens={{ childrenGap: 20 }}>
                 {/* Statistics Cards */}
                 <Stack horizontal tokens={{ childrenGap: 20 }} wrap>
-                  <Card tokens={cardTokens} className={styles.statCard}>
+                  <div style={{ padding: '16px', border: '1px solid #e1e1e1', borderRadius: '4px' }}>
                     <Stack horizontalAlign="center">
-                      <Text variant="xxLarge" className={styles.statNumber}>
+                      <Text variant="xxLarge" style={{ fontWeight: 'bold', fontSize: '32px' }}>
                         {state.statistics?.totalRequests || 0}
                       </Text>
                       <Text variant="medium">Total Requests</Text>
                     </Stack>
-                  </Card>
-                  <Card tokens={cardTokens} className={styles.statCard}>
+                  </div>
+                  <div style={{ padding: '16px', border: '1px solid #e1e1e1', borderRadius: '4px' }}>
                     <Stack horizontalAlign="center">
-                      <Text variant="xxLarge" className={styles.statNumber} style={{ color: '#107c10' }}>
+                      <Text variant="xxLarge" style={{ color: '#107c10', fontWeight: 'bold', fontSize: '32px' }}>
                         {state.statistics?.approvedRequests || 0}
                       </Text>
                       <Text variant="medium">Approved</Text>
                     </Stack>
-                  </Card>
-                  <Card tokens={cardTokens} className={styles.statCard}>
+                  </div>
+                  <div style={{ padding: '16px', border: '1px solid #e1e1e1', borderRadius: '4px' }}>
                     <Stack horizontalAlign="center">
-                      <Text variant="xxLarge" className={styles.statNumber} style={{ color: '#ff8c00' }}>
+                      <Text variant="xxLarge" style={{ color: '#ff8c00', fontWeight: 'bold', fontSize: '32px' }}>
                         {state.statistics?.pendingRequests || 0}
                       </Text>
                       <Text variant="medium">Pending</Text>
                     </Stack>
-                  </Card>
-                  <Card tokens={cardTokens} className={styles.statCard}>
+                  </div>
+                  <div style={{ padding: '16px', border: '1px solid #e1e1e1', borderRadius: '4px' }}>
                     <Stack horizontalAlign="center">
-                      <Text variant="xxLarge" className={styles.statNumber}>
+                      <Text variant="xxLarge" style={{ fontWeight: 'bold', fontSize: '32px' }}>
                         {state.statistics?.totalDaysRequested || 0}
                       </Text>
                       <Text variant="medium">Days Requested</Text>
                     </Stack>
-                  </Card>
+                  </div>
                 </Stack>
 
                 {/* Charts */}
                 <Stack horizontal tokens={{ childrenGap: 20 }} wrap>
-                  <Card tokens={cardTokens} className={styles.chartCard}>
+                  <div style={{ padding: '16px', border: '1px solid #e1e1e1', borderRadius: '4px' }}>
                     <Stack>
                       <Text variant="large">Leave Types Breakdown</Text>
-                      <div className={styles.chartContainer}>
+                      <div style={{ padding: '20px', textAlign: 'center' }}>
                         {/* Chart component would go here */}
                         <Text>Chart visualization coming soon</Text>
                       </div>
                     </Stack>
-                  </Card>
-                  <Card tokens={cardTokens} className={styles.chartCard}>
+                  </div>
+                  <div style={{ padding: '16px', border: '1px solid #e1e1e1', borderRadius: '4px' }}>
                     <Stack>
                       <Text variant="large">Monthly Usage</Text>
-                      <div className={styles.chartContainer}>
+                      <div style={{ padding: '20px', textAlign: 'center' }}>
                         {/* Chart component would go here */}
                         <Text>Chart visualization coming soon</Text>
                       </div>
                     </Stack>
-                  </Card>
+                  </div>
                 </Stack>
               </Stack>
             </PivotItem>
